@@ -53,16 +53,19 @@ public class RobotContainer extends CommandOpMode {
 
     public void setDefaultCommands() {
         Trigger transferTrigger = new Trigger(() -> {
-            return driverJoystick.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.7;
-        } );
-
-        Trigger shooterTrigger = new Trigger(() -> {
             return driverJoystick.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.7;
         } );
 
-        shooterTrigger.whileActiveContinuous(new teleOpFlywheelCommand(flywheelSub));
+        Trigger outTrigger = new Trigger(() -> {
+            return driverJoystick.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.7;
+        } );
 
-        transferTrigger.whileActiveContinuous(new teleOpTransferCommand(transferSub));
+        outTrigger.whileActiveContinuous(new teleOpTransferCommand(transferSub, -Constants.transferConstants.transferMotorPower));
+
+        transferTrigger.whileActiveContinuous(new teleOpTransferCommand(transferSub, Constants.transferConstants.transferMotorPower));
+
+        driverJoystick.getGamepadButton(GamepadKeys.Button.A)
+                .toggleWhenPressed(new teleOpFlywheelCommand(flywheelSub));
     }
 
     private void runCommands() {

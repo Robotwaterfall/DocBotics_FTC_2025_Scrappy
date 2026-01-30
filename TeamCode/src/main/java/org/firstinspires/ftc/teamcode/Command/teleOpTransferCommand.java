@@ -10,10 +10,12 @@ public class teleOpTransferCommand extends CommandBase {
 
     transferSubsystem transferSubsystem;
     DcMotor transferMotor;
+    double transferSpeed;
 
-    public teleOpTransferCommand(transferSubsystem transferSubsystem){
+    public teleOpTransferCommand(transferSubsystem transferSubsystem, double transferSpeed){
         this.transferSubsystem = transferSubsystem;
         this.transferMotor = transferSubsystem.getTransferMotor();
+        this.transferSpeed = transferSpeed;
         addRequirements(transferSubsystem);
 
     }
@@ -27,7 +29,7 @@ public class teleOpTransferCommand extends CommandBase {
     @Override
     public void execute() {
 
-        transferMotor.setPower(Constants.transferConstants.transferMotorPower);
+        transferMotor.setPower(transferSpeed);
 
     }
 
