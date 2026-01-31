@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.dashboard.config.Config;
+
+@Config
 public class Constants {
 
     public static final class OIConstants{
@@ -9,17 +12,15 @@ public class Constants {
 
     public static final class transferConstants{
 
-        public static double transferMotorPower = 0.8;
+        public static double transferMotorPower = 1.0;
 
 
     }
 
-    public static final class shooterConstants{
+    public static double shooterPower = 0.6;
+    public static double timeOutShooting = 0.4;
+    public static double timeOutbetweenShoots = 1.5;
 
-        public static double shooterPower = 0.5;
-
-
-    }
 
     public static final class mecanumConstants{
         public static final double thresHold = 0.05;
@@ -35,6 +36,10 @@ public class Constants {
                     (WHEEL_DIAMETER_INCHES * Math.PI);
 
         }
+
+    }
+
+    public void periodic(){
 
     }
 

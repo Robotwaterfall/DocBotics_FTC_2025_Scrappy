@@ -12,7 +12,7 @@ public class flywheelSubsystem extends SubsystemBase {
     public flywheelSubsystem(DcMotor flyWheelMotor){
         this.flyWheelMotor = flyWheelMotor;
 
-        flyWheelMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        flyWheelMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
     }
 

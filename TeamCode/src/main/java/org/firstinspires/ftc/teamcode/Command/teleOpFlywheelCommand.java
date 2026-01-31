@@ -10,10 +10,12 @@ public class teleOpFlywheelCommand extends CommandBase {
 
     flywheelSubsystem flywheelSub;
     DcMotor flyWheelMotor;
+    double flyWheelPower;
 
-    public teleOpFlywheelCommand(flywheelSubsystem flywheelSub){
+    public teleOpFlywheelCommand(flywheelSubsystem flywheelSub, double flywheelPower){
         this.flywheelSub = flywheelSub;
         this.flyWheelMotor = flywheelSub.getFlyWheelMotor();
+        this.flyWheelPower = flywheelPower;
         addRequirements(flywheelSub);
 
     }
@@ -27,7 +29,7 @@ public class teleOpFlywheelCommand extends CommandBase {
     @Override
     public void execute() {
 
-        flyWheelMotor.setPower(Constants.shooterConstants.shooterPower);
+        flyWheelMotor.setPower(flyWheelPower);
 
     }
 

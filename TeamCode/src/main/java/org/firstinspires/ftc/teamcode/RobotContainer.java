@@ -1,6 +1,12 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.Constants.shooterPower;
+import static org.firstinspires.ftc.teamcode.Constants.timeOutShooting;
+import static org.firstinspires.ftc.teamcode.Constants.timeOutbetweenShoots;
+import static org.firstinspires.ftc.teamcode.Constants.transferConstants.transferMotorPower;
+
 import com.arcrobotics.ftclib.command.CommandOpMode;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.command.button.Trigger;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
@@ -10,6 +16,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.teamcode.Command.teleOpFlywheelCommand;
 import org.firstinspires.ftc.teamcode.Command.teleOpMecanumDriveCommand;
 import org.firstinspires.ftc.teamcode.Command.teleOpTransferCommand;
+import org.firstinspires.ftc.teamcode.Command.waitCommand;
 import org.firstinspires.ftc.teamcode.Subsystem.flywheelSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystem.mecanumDriveSubsystem;
 import org.firstinspires.ftc.teamcode.Subsystem.transferSubsystem;
@@ -23,8 +30,6 @@ public class RobotContainer extends CommandOpMode {
 
     @Override
     public void initialize() {
-
-        // Mecanum Motor binding
         driveSub = new mecanumDriveSubsystem(
                 hardwareMap.get(DcMotor.class,"front_left"),
                 hardwareMap.get(DcMotor.class, "front_right"),
@@ -43,8 +48,9 @@ public class RobotContainer extends CommandOpMode {
 
         driverJoystick = new GamepadEx(gamepad1);
 
-        runCommands();
         setDefaultCommands();
+        runCommands();
+
 
     }
 
@@ -60,6 +66,16 @@ public class RobotContainer extends CommandOpMode {
     }
 
     public void setDefaultCommands() {
+
+        driveSub.setDefaultCommand(
+                new teleOpMecanumDriveCommand(
+                        driveSub,
+                        () -> applyDeadband(driverJoystick.getLeftY(), 0.05),  // Forward/back
+                        () -> applyDeadband(driverJoystick.getLeftX(), 0.05),  // Strafe
+                        () -> applyDeadband(driverJoystick.getRightX(), 0.05) // Rotate
+                )
+        );
+
         Trigger transferTrigger = new Trigger(() -> {
             return driverJoystick.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) > 0.7;
         } );
@@ -68,12 +84,15 @@ public class RobotContainer extends CommandOpMode {
             return driverJoystick.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.7;
         } );
 
-        outTrigger.whileActiveContinuous(new teleOpTransferCommand(transferSub, -Constants.transferConstants.transferMotorPower));
+        outTrigger.whileActiveContinuous(new teleOpTransferCommand(transferSub, -transferMotorPower, 100));
 
-        transferTrigger.whileActiveContinuous(new teleOpTransferCommand(transferSub, Constants.transferConstants.transferMotorPower));
+        transferTrigger.whileActiveContinuous(new SequentialCommandGroup(
+                new teleOpTransferCommand(transferSub, transferMotorPower,timeOutShooting),
+                new waitCommand(timeOutbetweenShoots) //seconds
+        ));
 
         driverJoystick.getGamepadButton(GamepadKeys.Button.A)
-                .toggleWhenPressed(new teleOpFlywheelCommand(flywheelSub));
+                .toggleWhenPressed(new teleOpFlywheelCommand(flywheelSub, shooterPower));
     }
 
     private void runCommands() {

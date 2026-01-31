@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Command;
 
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.Subsystem.transferSubsystem;
@@ -12,10 +13,14 @@ public class teleOpTransferCommand extends CommandBase {
     DcMotor transferMotor;
     double transferSpeed;
 
-    public teleOpTransferCommand(transferSubsystem transferSubsystem, double transferSpeed){
+    private final double m_timeIndexing;
+    private ElapsedTime runtime = new ElapsedTime();
+
+    public teleOpTransferCommand(transferSubsystem transferSubsystem, double transferSpeed, double timeIndexing){
         this.transferSubsystem = transferSubsystem;
         this.transferMotor = transferSubsystem.getTransferMotor();
         this.transferSpeed = transferSpeed;
+        this.m_timeIndexing = timeIndexing;
         addRequirements(transferSubsystem);
 
     }
@@ -23,6 +28,7 @@ public class teleOpTransferCommand extends CommandBase {
     @Override
     public void initialize() {
         transferMotor.setPower(0);
+        runtime.reset();
 
     }
 
@@ -31,6 +37,11 @@ public class teleOpTransferCommand extends CommandBase {
 
         transferMotor.setPower(transferSpeed);
 
+    }
+
+    @Override
+    public boolean isFinished() {
+        return runtime.seconds() >= m_timeIndexing;
     }
 
     @Override
